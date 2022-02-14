@@ -19,6 +19,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/pokemons', [PokemonController::class, 'index'])->name('pokemon.index');
-Route::get('/pokemons/{pokemon:id}', [PokemonController::class, 'show'])->name('pokemon.show');
-Route::put('/pokemons/{pokemon:id}', [PokemonController::class, 'update'])->name('pokemon.update');
+Route::group(['middleware' => 'auth:sanctum'], function () {
+	Route::get('/pokemons', [PokemonController::class, 'index'])->name('pokemon.index');
+	Route::get('/pokemons/{pokemon:id}', [PokemonController::class, 'show'])->name('pokemon.show');
+	Route::put('/pokemons/{pokemon:id}', [PokemonController::class, 'update'])->name('pokemon.update');
+});

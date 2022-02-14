@@ -17,7 +17,7 @@ class PokemonController extends Controller
 
     public function index()
     {
-    	return PokemonResource::collection(Pokemon::latest()->paginate(1000));
+    	return PokemonResource::collection(Pokemon::latest()->paginate(25));
     }
 
     public function show(Pokemon $pokemon)

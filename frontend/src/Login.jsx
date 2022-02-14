@@ -1,34 +1,55 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
- 
+import { useHistory } from 'react-router'
+
 const Login = () => {
-    const [email, setEmail] = React.useState('');
-    const [password, setPassword] = React.useState('');
-    const handleSubmit = (e) => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [user, setUser] = useState({});
+    const history = useHistory();
+
+    const handleSubmit = async(e) => {
         e.preventDefault();
-        axios.get('http://app.prepend.test/sanctum/csrf-cookie')
-        .then(response => {
-            axios.post('http://app.prepend.test/login', {
-                email: email,
-                password: password
-            }).then(response => {
-                console.log(response)
-            })
-        });
+        try {
+            await axios.get('http://app.prepend.test/sanctum/csrf-cookie')
+            await axios.post('http://app.prepend.test/login', {email, password})
+            const { data } = await axios.get('http://app.prepend.test/api/user')
+            setUser(data)
+            await localStorage.setItem('user', JSON.stringify(data))
+            await history.push('/')
+            window.location.reload()
+        } catch (error) {
+            console.log(error)
+        }
     }
+
+    useEffect(() => {
+
+    })
+
     return (
-        <div>
-            <h1>Login</h1>
+        <div className='container'>
+        <div className='row auto'>
+            <h1 className='mt-5 text-center'>Login</h1>
             <form onSubmit={handleSubmit}>
-                <input
-                    type="email"
+            <div className="mb-3">
+                <label htmlFor="email" className="form-label">Email address</label>
+                <input 
+                    className="form-control" 
+                    id="email" 
                     name="email"
                     placeholder="Email"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     required
                 />
-                <input
+                <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
+            </div>
+            <div className="mb-3">
+                <label htmlFor="password" className="form-label">Password</label>
+                <input 
+                    className="form-control" 
+                    id="password" 
                     type="password"
                     name="password"
                     placeholder="Password"
@@ -36,8 +57,14 @@ const Login = () => {
                     onChange={e => setPassword(e.target.value)}
                     required
                 />
-                <button type="submit">Login</button>
+            </div>
+            <div className="mb-3 form-check">
+                <input type="checkbox" className="form-check-input" id="exampleCheck1" />
+                <label className="form-check-label" htmlFor="exampleCheck1">Check me out</label>
+            </div>
+            <button type="submit" className="btn btn-primary">Submit</button>
             </form>
+        </div>
         </div>
     );
 }
